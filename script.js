@@ -1,3 +1,5 @@
+console.log("Script cargado correctamente");
+
 document.addEventListener("DOMContentLoaded", function () {
     const checkboxesContainer = document.getElementById("plans-list");
     const clearBtn = document.getElementById("clear-btn");
