@@ -81,3 +81,29 @@ document.addEventListener("DOMContentLoaded", function () {
         sortPlans(this.value); // Ordenar según el criterio seleccionado
     });
 });
+
+// Configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
+  authDomain: "lista-planes.firebaseapp.com",
+  databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lista-planes",
+  storageBucket: "lista-planes.firebasestorage.app",
+  messagingSenderId: "341913189781",
+  appId: "1:341913189781:web:c07774471cc08e9e710a9c",
+  measurementId: "G-6B07BN02KY"
+};
+
+// Inicializa Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database(app);
+const plansRef = database.ref('plans'); // Referencia a la base de datos
+
+// Función para guardar datos
+function savePlan(planText) {
+  const newPlanKey = firebase.database().ref().child('plans').push().key;
+  firebase.database().ref('plans/' + newPlanKey).set({
+    text: planText,
+    checked: false
+  });
+}
