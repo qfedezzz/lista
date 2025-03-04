@@ -60,7 +60,7 @@
             });
         }
 
-        // Función para cargar los planes
+        // Función para cargar los planes desde Firebase
         function loadPlans() {
             plansRef.on('value', (snapshot) => {
                 const data = snapshot.val();
