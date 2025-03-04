@@ -18,8 +18,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app); // Obtener la referencia a la base de datos
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
     const checkboxesContainer = document.getElementById("plans-list");
     const clearBtn = document.getElementById("clear-btn");
@@ -27,8 +25,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const planInput = document.getElementById("new-plan");
     const sortSelect = document.getElementById("sort-options");
 
-    // Cargar las actividades guardadas en localStorage
-    const savedPlans = JSON.parse(localStorage.getItem("plans")) || [];
+    // Cargar los planes desde Firebase
+    let savedPlans = [];
+
+    function loadPlans() {
+        const plansRef = ref(db, 'plans');
+        get(plansRef).then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                savedPlans = Object.keys(data).map(key => ({
+                    text: data[key].text,
+                    checked: data[key].checked,
+                    timestamp: data[key].timestamp,
+                    id: key // Id único generado por Firebase
+                }));
+            } else {
+                savedPlans = [];
+            }
+            updatePlanList();
+        }).catch(error => {
+            console.error("Error al obtener los planes:", error);
+        });
+    }
+
+    loadPlans(); // Cargar los planes al inicio
 
     // Función para ordenar los planes
     function sortPlans(criterion) {
@@ -54,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
             checkbox.checked = plan.checked;
             checkbox.addEventListener("change", function () {
                 savedPlans[index].checked = this.checked;
-                localStorage.setItem("plans", JSON.stringify(savedPlans));
+                savePlans(); // Guardar los cambios en Firebase
             });
 
             listItem.appendChild(checkbox);
@@ -65,9 +85,14 @@ document.addEventListener("DOMContentLoaded", function () {
             deleteBtn.textContent = "Eliminar";
             deleteBtn.classList.add("delete-btn");
             deleteBtn.addEventListener("click", function () {
-                savedPlans.splice(index, 1); // Eliminar la actividad de la lista
-                localStorage.setItem("plans", JSON.stringify(savedPlans));
-                updatePlanList(); // Actualizar la lista después de eliminar
+                const planId = savedPlans[index].id;
+                const planRef = ref(db, 'plans/' + planId);
+                remove(planRef).then(() => {
+                    savedPlans.splice(index, 1); // Eliminar el plan localmente
+                    updatePlanList(); // Actualizar la lista después de eliminar
+                }).catch(error => {
+                    console.error("Error al eliminar el plan:", error);
+                });
             });
 
             listItem.appendChild(deleteBtn);
@@ -75,26 +100,43 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Inicializar la lista de planes
-    updatePlanList();
-
     // Agregar un nuevo plan
     addBtn.addEventListener("click", function () {
         const planText = planInput.value.trim();
         if (planText === "") return;
 
-        const newPlan = { text: planText, checked: false, timestamp: Date.now() }; // Añadí timestamp para ordenar
-        savedPlans.push(newPlan);
-        localStorage.setItem("plans", JSON.stringify(savedPlans));
+        const newPlan = { 
+            text: planText, 
+            checked: false, 
+            timestamp: Date.now(),
+            id: Date.now().toString() // Crear un ID único
+        };
 
+        savedPlans.push(newPlan);
+        savePlans(); // Guardar en Firebase
         updatePlanList(); // Actualizar la lista con el nuevo plan
         planInput.value = ""; // Limpiar el input
     });
 
+    // Función para guardar los planes en Firebase
+    function savePlans() {
+        const plansRef = ref(db, 'plans');
+        savedPlans.forEach(plan => {
+            const planRef = ref(db, 'plans/' + plan.id);
+            set(planRef, {
+                text: plan.text,
+                checked: plan.checked,
+                timestamp: plan.timestamp
+            }).catch(error => {
+                console.error("Error al guardar el plan:", error);
+            });
+        });
+    }
+
     // Botón para desmarcar todo
     clearBtn.addEventListener("click", function () {
         savedPlans.forEach(plan => plan.checked = false);
-        localStorage.setItem("plans", JSON.stringify(savedPlans));
+        savePlans(); // Guardar los cambios en Firebase
         updatePlanList(); // Actualizar la lista después de desmarcar
     });
 
