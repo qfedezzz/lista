@@ -12,31 +12,36 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
     <script type="module">
-      // Importar las funciones necesarias desde el SDK de Firebase
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-      import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
-
-      // Configuración de Firebase
-      const firebaseConfig = {
-        apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
-        authDomain: "lista-planes.firebaseapp.com",
-        databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "lista-planes",
-        storageBucket: "lista-planes.firebasestorage.app",
-        messagingSenderId: "341913189781",
-        appId: "1:341913189781:web:c07774471cc08e9e710a9c",
-        measurementId: "G-6B07BN02KY"
-      };
-
-      // Inicializar Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const database = getDatabase(app);
-
-      // Referencia a la base de datos para almacenar planes
-      const plansRef = ref(database, 'plans');
+        // Importar Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
+            authDomain: "lista-planes.firebaseapp.com",
+            databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lista-planes",
+            storageBucket: "lista-planes.appspot.com",
+            messagingSenderId: "341913189781",
+            appId: "1:341913189781:web:c07774471cc08e9e710a9c",
+            measurementId: "G-6B07BN02KY"
+        };
+    
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+    
+        // Hacer accesible la base de datos en otros scripts
+        window.firebaseDatabase = database;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebasePush = push;
+        window.firebaseOnValue = onValue;
+        window.firebaseUpdate = update;
+        window.firebaseRemove = remove;
     </script>
+
 </head>
 <body>
     <div class="notebook">
