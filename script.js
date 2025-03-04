@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Referencia a la base de datos de Firebase
     const plansRef = firebase.database().ref("plans");
+    console.log("Firebase inicializado:", firebase);
+    console.log("Base de datos:", firebase.database());
 
     // Función para leer los planes desde Firebase
     function getPlans() {
