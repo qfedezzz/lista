@@ -1,3 +1,6 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js";
+
 // Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
@@ -11,18 +14,19 @@ const firebaseConfig = {
 };
 
 // Inicializa Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const database = firebase.database(app);
-const plansRef = database.ref('plans'); // Referencia a la base de datos
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const plansRef = ref(database, 'plans');
 
 // Función para guardar datos
 function savePlan(planText) {
-    const newPlanKey = firebase.database().ref().child('plans').push().key;
-    firebase.database().ref('plans/' + newPlanKey).set({
+    const newPlanKey = ref(database, 'plans').push().key;
+    set(ref(database, 'plans/' + newPlanKey), {
         text: planText,
         checked: false
     });
 }
+
 
 // Función para cargar los planes desde Firebase
 function loadPlans() {
