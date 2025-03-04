@@ -1,3 +1,9 @@
+import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+// Obtener la instancia de la base de datos
+const database = getDatabase();
+const plansRef = ref(database, "plans");
+
 console.log("Script cargado correctamente");
 
 document.addEventListener("DOMContentLoaded", function () {
