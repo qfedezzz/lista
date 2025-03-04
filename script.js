@@ -1,18 +1,23 @@
-// Configuración de Firebase
+// Importar Firebase
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, get, child, update, remove } from "firebase/database";
+
+// Tu configuración de Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
-    authDomain: "lista-planes.firebaseapp.com",
-    databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "lista-planes",
-    storageBucket: "lista-planes.firebasestorage.app",
-    messagingSenderId: "341913189781",
-    appId: "1:341913189781:web:c07774471cc08e9e710a9c",
-    measurementId: "G-6B07BN02KY"
+  apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
+  authDomain: "lista-planes.firebaseapp.com",
+  databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lista-planes",
+  storageBucket: "lista-planes.firebasestorage.app",
+  messagingSenderId: "341913189781",
+  appId: "1:341913189781:web:c07774471cc08e9e710a9c",
+  measurementId: "G-6B07BN02KY"
 };
 
 // Inicializar Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app); // Obtener la referencia a la base de datos
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
