@@ -31,7 +31,11 @@
       // Crear una referencia para los "planes"
       const plansRef = database.ref("plans");
 
+      // Verificar que Firebase y la base de datos estén cargados
+      console.log("Firebase cargado:", window.firebase);
+      console.log("Base de datos:", firebase.database);
     </script>
+
 </head>
 <body>
     <div class="notebook">
