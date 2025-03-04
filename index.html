@@ -6,6 +6,23 @@
     <title>Lista de Planes</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="script.js"></script>
+    <!-- Agregar Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script>
+    // Configura Firebase
+    const firebaseConfig = {
+        apiKey: "tu-api-key",
+        authDomain: "tu-auth-domain",
+        databaseURL: "tu-database-url",
+        projectId: "tu-project-id",
+        storageBucket: "tu-storage-bucket",
+        messagingSenderId: "tu-sender-id",
+        appId: "tu-app-id"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+    </script>
 </head>
 <body>
     <div class="notebook">
