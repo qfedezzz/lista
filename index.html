@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Planes</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="notebook">
+        <!-- Select para ordenar -->
+        <div class="sort-container">
+            <select id="sort-options">
+                <option value="newest">Más reciente</option>
+                <option value="oldest">Más antiguo</option>
+                <option value="checked">Marcados</option>
+                <option value="unchecked">Desmarcados</option>
+            </select>
+        </div>
+        <h1>Actividades para Autistas</h1>
+        <ul id="plans-list">
+            <li><input type="checkbox"> Cena romántica</li>
+            <li><input type="checkbox"> Ver una película juntos</li>
+            <li><input type="checkbox"> Picnic en el parque</li>
+            <li><input type="checkbox"> Paseo en bicicleta</li>
+            <li><input type="checkbox"> Cocinar una receta nueva</li>
+        </ul>      
+
+        <div class="add-container">
+            <input type="text" id="new-plan" placeholder="Añadir un nuevo plan...">
+            <button id="add-btn">+</button>
+        </div>
+        <button id="clear-btn">Desmarcar todo</button>
+    </div>
+</body>
+</html>
