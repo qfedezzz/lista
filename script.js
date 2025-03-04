@@ -5,20 +5,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const planInput = document.getElementById("new-plan");
     const sortSelect = document.getElementById("sort-options");
 
-    // Referencia a la base de datos de Firebase
-    const plansRef = firebase.database().ref("plans");
-    console.log("Firebase inicializado:", firebase);
-    console.log("Base de datos:", firebase.database());
+    // Acceder a Firebase desde el HTML
+    const database = window.firebaseDatabase;
+    const plansRef = window.firebaseRef(database, "plans");
 
     // Función para leer los planes desde Firebase
     function getPlans() {
-        plansRef.on("value", function(snapshot) {
+        window.firebaseOnValue(plansRef, (snapshot) => {
             const savedPlans = snapshot.val() || {};
             updatePlanList(savedPlans);
         });
     }
 
-    // Función para actualizar la lista de planes
+    // Función para actualizar la lista de planes en la página
     function updatePlanList(savedPlans) {
         checkboxesContainer.innerHTML = ""; // Limpiar la lista actual
         for (const key in savedPlans) {
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             checkbox.type = "checkbox";
             checkbox.checked = plan.checked;
             checkbox.addEventListener("change", function () {
-                firebase.database().ref("plans/" + key).update({
+                window.firebaseUpdate(window.firebaseRef(database, "plans/" + key), {
                     checked: this.checked
                 });
             });
@@ -36,12 +35,12 @@ document.addEventListener("DOMContentLoaded", function () {
             listItem.appendChild(checkbox);
             listItem.appendChild(document.createTextNode(plan.text));
 
-            // Crear el botón de eliminar
+            // Botón de eliminar
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Eliminar";
             deleteBtn.classList.add("delete-btn");
             deleteBtn.addEventListener("click", function () {
-                firebase.database().ref("plans/" + key).remove();
+                window.firebaseRemove(window.firebaseRef(database, "plans/" + key));
             });
 
             listItem.appendChild(deleteBtn);
@@ -58,25 +57,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (planText === "") return;
 
         const newPlan = { text: planText, checked: false };
-        const newPlanRef = plansRef.push();
-        newPlanRef.set(newPlan);
+        const newPlanRef = window.firebasePush(plansRef);
+        window.firebaseSet(newPlanRef, newPlan);
+
         planInput.value = ""; // Limpiar el input
     });
 
     // Botón para desmarcar todo
     clearBtn.addEventListener("click", function () {
-        plansRef.once("value", function(snapshot) {
+        window.firebaseOnValue(plansRef, (snapshot) => {
             const savedPlans = snapshot.val() || {};
-            for (const key in savedPlans) {
-                plansRef.child(key).update({ checked: false });
-            }
+            Object.keys(savedPlans).forEach((key) => {
+                window.firebaseUpdate(window.firebaseRef(database, "plans/" + key), { checked: false });
+            });
         });
     });
 
     // Evento para cambiar el orden cuando el select cambia
     sortSelect.addEventListener("change", function () {
-        const criterion = this.value;
-        // Aquí iría el código para ordenar según el criterio seleccionado
-        // Por ejemplo, ordenar por la fecha de creación, si se desea
+        // Ordenar según el criterio seleccionado
     });
 });
