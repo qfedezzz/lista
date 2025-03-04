@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para leer los planes desde Firebase
     function getPlans() {
         plansRef.on("value", function(snapshot) {
-            const savedPlans = snapshot.val() || [];
+            const savedPlans = snapshot.val() || {};
             updatePlanList(savedPlans);
         });
     }
@@ -64,15 +64,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Botón para desmarcar todo
     clearBtn.addEventListener("click", function () {
         plansRef.once("value", function(snapshot) {
-            const savedPlans = snapshot.val() || [];
-            savedPlans.forEach((plan, index) => {
-                plansRef.child(index).update({ checked: false });
-            });
+            const savedPlans = snapshot.val() || {};
+            for (const key in savedPlans) {
+                plansRef.child(key).update({ checked: false });
+            }
         });
     });
 
     // Evento para cambiar el orden cuando el select cambia
     sortSelect.addEventListener("change", function () {
-        // Ordenar según el criterio seleccionado
+        const criterion = this.value;
+        // Aquí iría el código para ordenar según el criterio seleccionado
+        // Por ejemplo, ordenar por la fecha de creación, si se desea
     });
 });
