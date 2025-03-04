@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="script.js"></script>
 
-
     <!-- Agregar Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
@@ -24,8 +23,6 @@
             appId: "1:341913189781:web:c07774471cc08e9e710a9c",
             measurementId: "G-6B07BN02KY"
         };
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
         
         // Inicializar Firebase
         const app = firebase.initializeApp(firebaseConfig);
@@ -57,92 +54,93 @@
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-          const checkboxesContainer = document.getElementById("plans-list");
-          const clearBtn = document.getElementById("clear-btn");
-          const addBtn = document.getElementById("add-btn");
-          const planInput = document.getElementById("new-plan");
-          const sortSelect = document.getElementById("sort-options");
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkboxesContainer = document.getElementById("plans-list");
+            const clearBtn = document.getElementById("clear-btn");
+            const addBtn = document.getElementById("add-btn");
+            const planInput = document.getElementById("new-plan");
+            const sortSelect = document.getElementById("sort-options");
 
-          // Función para obtener los planes desde Firebase
-          function getPlans() {
-              plansRef.on('value', function(snapshot) {
-                  const plans = snapshot.val();
-                  if (plans) {
-                      updatePlanList(plans);
-                  }
-              });
-          }
+            // Función para obtener los planes desde Firebase
+            function getPlans() {
+                plansRef.on('value', function(snapshot) {
+                    const plans = snapshot.val();
+                    if (plans) {
+                        updatePlanList(plans);
+                    }
+                });
+            }
 
-          // Función para actualizar la lista de planes en la UI
-          function updatePlanList(plans) {
-              checkboxesContainer.innerHTML = ""; // Limpiar la lista actual
-              Object.keys(plans).forEach(key => {
-                  const plan = plans[key];
-                  const listItem = document.createElement("li");
-                  const checkbox = document.createElement("input");
-                  checkbox.type = "checkbox";
-                  checkbox.checked = plan.checked;
-                  checkbox.addEventListener("change", function () {
-                      update(ref(database, 'plans/' + key), {
-                          checked: this.checked
-                      });
-                  });
+            // Función para actualizar la lista de planes en la UI
+            function updatePlanList(plans) {
+                checkboxesContainer.innerHTML = ""; // Limpiar la lista actual
+                Object.keys(plans).forEach(key => {
+                    const plan = plans[key];
+                    const listItem = document.createElement("li");
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.checked = plan.checked;
+                    checkbox.addEventListener("change", function () {
+                        const planRef = database.ref('plans/' + key);
+                        planRef.update({
+                            checked: this.checked
+                        });
+                    });
 
-                  listItem.appendChild(checkbox);
-                  listItem.appendChild(document.createTextNode(plan.text));
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(document.createTextNode(plan.text));
 
-                  // Crear el botón de eliminar
-                  const deleteBtn = document.createElement("button");
-                  deleteBtn.textContent = "Eliminar";
-                  deleteBtn.classList.add("delete-btn");
-                  deleteBtn.addEventListener("click", function () {
-                      remove(ref(database, 'plans/' + key));
-                  });
+                    // Crear el botón de eliminar
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "Eliminar";
+                    deleteBtn.classList.add("delete-btn");
+                    deleteBtn.addEventListener("click", function () {
+                        const planRef = database.ref('plans/' + key);
+                        planRef.remove();
+                    });
 
-                  listItem.appendChild(deleteBtn);
-                  checkboxesContainer.appendChild(listItem);
-              });
-          }
+                    listItem.appendChild(deleteBtn);
+                    checkboxesContainer.appendChild(listItem);
+                });
+            }
 
-          // Inicializar la lista de planes
-          getPlans();
+            // Inicializar la lista de planes
+            getPlans();
 
-          // Agregar un nuevo plan
-          addBtn.addEventListener("click", function () {
-              const planText = planInput.value.trim();
-              if (planText === "") return;
+            // Agregar un nuevo plan
+            addBtn.addEventListener("click", function () {
+                const planText = planInput.value.trim();
+                if (planText === "") return;
 
-              const newPlanRef = push(plansRef); // Usar push para generar una ID única para el nuevo plan
-              set(newPlanRef, {
-                  text: planText,
-                  checked: false
-              });
+                const newPlanRef = plansRef.push(); // Usar push para generar una ID única para el nuevo plan
+                newPlanRef.set({
+                    text: planText,
+                    checked: false
+                });
 
-              planInput.value = ""; // Limpiar el input
-          });
+                planInput.value = ""; // Limpiar el input
+            });
 
-          // Botón para desmarcar todo
-          clearBtn.addEventListener("click", function () {
-              const plans = checkboxesContainer.querySelectorAll("li");
-              plans.forEach(function (li) {
-                  const checkbox = li.querySelector("input[type=checkbox]");
-                  if (checkbox.checked) {
-                      checkbox.checked = false;
-                      const planId = li.getAttribute("data-id");
-                      update(ref(database, 'plans/' + planId), {
-                          checked: false
-                      });
-                  }
-              });
-          });
+            // Botón para desmarcar todo
+            clearBtn.addEventListener("click", function () {
+                const plans = checkboxesContainer.querySelectorAll("li");
+                plans.forEach(function (li) {
+                    const checkbox = li.querySelector("input[type=checkbox]");
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                        const planId = li.getAttribute("data-id");
+                        const planRef = database.ref('plans/' + planId);
+                        planRef.update({ checked: false });
+                    }
+                });
+            });
 
-          // Evento para cambiar el orden cuando el select cambia
-          sortSelect.addEventListener("change", function () {
-              const criterion = this.value;
-              // Aquí iría el código para ordenar según el criterio seleccionado
-          });
-      });
+            // Evento para cambiar el orden cuando el select cambia
+            sortSelect.addEventListener("change", function () {
+                const criterion = this.value;
+                // Aquí iría el código para ordenar según el criterio seleccionado
+            });
+        });
     </script>
 </body>
 </html>
