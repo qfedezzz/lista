@@ -8,27 +8,30 @@
     <script defer src="script.js"></script>
 
     <!-- Agregar Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
-<script>
-  // Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
-    authDomain: "lista-planes.firebaseapp.com",
-    databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "lista-planes",
-    storageBucket: "lista-planes.appspot.com",
-    messagingSenderId: "341913189781",
-    appId: "1:341913189781:web:c07774471cc08e9e710a9c",
-    measurementId: "G-6B07BN02KY"
-  };
+    <script>
+      // Configuración de Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBb22LYa4N0NgFylqrWpcT_noKkIV-c62M",
+        authDomain: "lista-planes.firebaseapp.com",
+        databaseURL: "https://lista-planes-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "lista-planes",
+        storageBucket: "lista-planes.appspot.com",
+        messagingSenderId: "341913189781",
+        appId: "1:341913189781:web:c07774471cc08e9e710a9c",
+        measurementId: "G-6B07BN02KY"
+      };
 
-  // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
-</script>
+      // Inicializar Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = firebase.database(app);  // Obtener la base de datos
 
+      // Crear una referencia para los "planes"
+      const plansRef = database.ref("plans");
 
+    </script>
 </head>
 <body>
     <div class="notebook">
@@ -63,7 +66,7 @@
 
           // Función para obtener los planes desde Firebase
           function getPlans() {
-              onValue(plansRef, function(snapshot) {
+              plansRef.once("value", function(snapshot) {
                   const plans = snapshot.val();
                   if (plans) {
                       updatePlanList(plans);
@@ -81,7 +84,7 @@
                   checkbox.type = "checkbox";
                   checkbox.checked = plan.checked;
                   checkbox.addEventListener("change", function () {
-                      update(ref(database, 'plans/' + key), {
+                      plansRef.child(key).update({
                           checked: this.checked
                       });
                   });
@@ -94,7 +97,7 @@
                   deleteBtn.textContent = "Eliminar";
                   deleteBtn.classList.add("delete-btn");
                   deleteBtn.addEventListener("click", function () {
-                      remove(ref(database, 'plans/' + key));
+                      plansRef.child(key).remove();
                   });
 
                   listItem.appendChild(deleteBtn);
@@ -110,8 +113,8 @@
               const planText = planInput.value.trim();
               if (planText === "") return;
 
-              const newPlanRef = push(plansRef); // Usar push para generar una ID única para el nuevo plan
-              set(newPlanRef, {
+              const newPlanRef = plansRef.push(); // Usar push para generar una ID única para el nuevo plan
+              newPlanRef.set({
                   text: planText,
                   checked: false
               });
@@ -121,16 +124,11 @@
 
           // Botón para desmarcar todo
           clearBtn.addEventListener("click", function () {
-              const plans = checkboxesContainer.querySelectorAll("li");
-              plans.forEach(function (li) {
-                  const checkbox = li.querySelector("input[type=checkbox]");
-                  if (checkbox.checked) {
-                      checkbox.checked = false;
-                      const planId = li.getAttribute("data-id");
-                      update(ref(database, 'plans/' + planId), {
-                          checked: false
-                      });
-                  }
+              plansRef.once("value", function(snapshot) {
+                  const savedPlans = snapshot.val() || [];
+                  Object.keys(savedPlans).forEach(key => {
+                      plansRef.child(key).update({ checked: false });
+                  });
               });
           });
 
