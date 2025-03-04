@@ -13,13 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const planInput = document.getElementById("new-plan");
     const sortSelect = document.getElementById("sort-options");
 
-    // Acceder a Firebase desde el HTML
-    const database = window.firebaseDatabase;
-    const plansRef = window.firebaseRef(database, "plans");
-
     // Función para leer los planes desde Firebase
     function getPlans() {
-        window.firebaseOnValue(plansRef, (snapshot) => {
+        onValue(plansRef, (snapshot) => {
             const savedPlans = snapshot.val() || {};
             updatePlanList(savedPlans);
         });
@@ -35,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
             checkbox.type = "checkbox";
             checkbox.checked = plan.checked;
             checkbox.addEventListener("change", function () {
-                window.firebaseUpdate(window.firebaseRef(database, "plans/" + key), {
+                update(ref(database, "plans/" + key), {
                     checked: this.checked
                 });
             });
@@ -48,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
             deleteBtn.textContent = "Eliminar";
             deleteBtn.classList.add("delete-btn");
             deleteBtn.addEventListener("click", function () {
-                window.firebaseRemove(window.firebaseRef(database, "plans/" + key));
+                remove(ref(database, "plans/" + key));
             });
 
             listItem.appendChild(deleteBtn);
@@ -65,18 +61,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (planText === "") return;
 
         const newPlan = { text: planText, checked: false };
-        const newPlanRef = window.firebasePush(plansRef);
-        window.firebaseSet(newPlanRef, newPlan);
+        const newPlanRef = push(plansRef);
+        set(newPlanRef, newPlan);
 
         planInput.value = ""; // Limpiar el input
     });
 
     // Botón para desmarcar todo
     clearBtn.addEventListener("click", function () {
-        window.firebaseOnValue(plansRef, (snapshot) => {
+        onValue(plansRef, (snapshot) => {
             const savedPlans = snapshot.val() || {};
             Object.keys(savedPlans).forEach((key) => {
-                window.firebaseUpdate(window.firebaseRef(database, "plans/" + key), { checked: false });
+                update(ref(database, "plans/" + key), { checked: false });
             });
         });
     });
