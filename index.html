@@ -5,27 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Planes</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
-    <script type="module" defer src="firebase-config.js"></script> 
+    <script type="module" defer src="script.js"></script>
 </head>
 <body>
     <div class="notebook">
-        <!-- Select para ordenar -->
-        <div class="sort-container">
-            <select id="sort-options">
-                <option value="newest">Más reciente</option>
-                <option value="oldest">Más antiguo</option>
-                <option value="checked">Marcados</option>
-                <option value="unchecked">Desmarcados</option>
-            </select>
-        </div>
         <h1>Lista de Planes</h1>
-        <ul id="plans-list"></ul> <!-- Lista vacía, se llenará con Firebase -->
-
+        <ul id="plans-list"></ul> <!-- La lista se llenará con los datos de Firebase -->
+        
         <div class="add-container">
             <input type="text" id="new-plan" placeholder="Añadir un nuevo plan..." name="plan">
             <button id="add-btn">+</button>
         </div>
+        
         <button id="clear-btn">Desmarcar todo</button>
     </div>
 </body>
