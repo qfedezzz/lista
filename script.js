@@ -1,70 +1,82 @@
-// Importar Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "./firebase-config.js";
 
-import { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-document.addEventListener("DOMContentLoaded", async function () {
-    const checkboxesContainer = document.getElementById("plans-list");
+document.addEventListener("DOMContentLoaded", function () {
+    const plansList = document.getElementById("plans-list");
     const addBtn = document.getElementById("add-btn");
     const planInput = document.getElementById("new-plan");
+    const clearBtn = document.getElementById("clear-btn");
+    const sortSelect = document.getElementById("sort-options");
 
-    const plansCollection = collection(db, "planes"); // Conectar a la colección "planes"
-    
-    // Inicializar Firebase y Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // Cargar planes desde Firestore
+    async function loadPlans(sortBy = "timestamp") {
+        plansList.innerHTML = ""; // Limpiar lista antes de agregar elementos
 
-export { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy };
-    // Función para agregar un nuevo plan
+        const q = query(collection(db, "plans"), orderBy(sortBy, "desc"));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach(doc => {
+            const plan = doc.data();
+            createPlanElement(doc.id, plan.text, plan.checked);
+        });
+    }
+
+    // Crear un elemento de plan en la lista
+    function createPlanElement(id, text, checked) {
+        const listItem = document.createElement("li");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = checked;
+        checkbox.addEventListener("change", async function () {
+            await updateDoc(doc(db, "plans", id), { checked: this.checked });
+        });
+
+        listItem.appendChild(checkbox);
+        listItem.appendChild(document.createTextNode(text));
+
+        // Botón eliminar
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Eliminar";
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.addEventListener("click", async function () {
+            await deleteDoc(doc(db, "plans", id));
+            listItem.remove();
+        });
+
+        listItem.appendChild(deleteBtn);
+        plansList.appendChild(listItem);
+    }
+
+    // Agregar un nuevo plan
     addBtn.addEventListener("click", async function () {
         const planText = planInput.value.trim();
         if (planText === "") return;
 
-        try {
-            await addDoc(plansCollection, { text: planText, checked: false, timestamp: Date.now() });
-            planInput.value = ""; // Limpiar input después de agregar
-        } catch (error) {
-            console.error("Error al agregar plan:", error);
-        }
+        const newPlanRef = await addDoc(collection(db, "plans"), {
+            text: planText,
+            checked: false,
+            timestamp: Date.now()
+        });
+
+        createPlanElement(newPlanRef.id, planText, false);
+        planInput.value = ""; // Limpiar input
     });
 
-    // Función para mostrar los planes en la lista
-    function updatePlanList(snapshot) {
-        checkboxesContainer.innerHTML = ""; // Limpiar la lista antes de renderizar
-        snapshot.forEach(docSnap => {
-            const plan = docSnap.data();
-            const listItem = document.createElement("li");
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.checked = plan.checked;
-            checkbox.addEventListener("change", async function () {
-                try {
-                    await updateDoc(doc(db, "planes", docSnap.id), { checked: this.checked });
-                } catch (error) {
-                    console.error("Error al actualizar:", error);
-                }
-            });
-
-            listItem.appendChild(checkbox);
-            listItem.appendChild(document.createTextNode(plan.text));
-
-            // Botón de eliminar
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Eliminar";
-            deleteBtn.addEventListener("click", async function () {
-                try {
-                    await deleteDoc(doc(db, "planes", docSnap.id));
-                } catch (error) {
-                    console.error("Error al eliminar:", error);
-                }
-            });
-
-            listItem.appendChild(deleteBtn);
-            checkboxesContainer.appendChild(listItem);
+    // Botón para desmarcar todo
+    clearBtn.addEventListener("click", async function () {
+        const querySnapshot = await getDocs(collection(db, "plans"));
+        querySnapshot.forEach(async (documento) => {
+            await updateDoc(doc(db, "plans", documento.id), { checked: false });
         });
-    }
+        loadPlans();
+    });
 
-    // Suscribirse en tiempo real para actualizar la lista cuando haya cambios
-    onSnapshot(plansCollection, updatePlanList);
+    // Ordenar la lista
+    sortSelect.addEventListener("change", function () {
+        const sortBy = this.value === "checked" || this.value === "unchecked" ? "checked" : "timestamp";
+        loadPlans(sortBy);
+    });
+
+    // Cargar planes al inicio
+    loadPlans();
 });
