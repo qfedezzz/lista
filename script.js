@@ -1,3 +1,7 @@
+// Importar Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
 import { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -6,7 +10,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     const planInput = document.getElementById("new-plan");
 
     const plansCollection = collection(db, "planes"); // Conectar a la colección "planes"
+    
+    // Inicializar Firebase y Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
+export { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy };
     // Función para agregar un nuevo plan
     addBtn.addEventListener("click", async function () {
         const planText = planInput.value.trim();
