@@ -5,25 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Planes</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyCHFzGTHNrZKVqpI7wqjOTWCpG_llqonMY",
-        authDomain: "lista-12899.firebaseapp.com",
-        projectId: "lista-12899",
-        storageBucket: "lista-12899.firebasestorage.app",
-        messagingSenderId: "841578650890",
-        appId: "1:841578650890:web:6d0dd9f655eb230994eef3"
-      };
-    
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-        
-      export { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot };
-    </script>
     <script defer src="script.js"></script>
+    <script type="module" defer src="firebase-config.js"></script> 
 </head>
 <body>
     <div class="notebook">
@@ -36,17 +19,11 @@
                 <option value="unchecked">Desmarcados</option>
             </select>
         </div>
-        <h1>Actividades para Autistas</h1>
-        <ul id="plans-list">
-            <li><input type="checkbox"> Cena romántica</li>
-            <li><input type="checkbox"> Ver una película juntos</li>
-            <li><input type="checkbox"> Picnic en el parque</li>
-            <li><input type="checkbox"> Paseo en bicicleta</li>
-            <li><input type="checkbox"> Cocinar una receta nueva</li>
-        </ul>      
+        <h1>Lista de Planes</h1>
+        <ul id="plans-list"></ul> <!-- Lista vacía, se llenará con Firebase -->
 
         <div class="add-container">
-            <input type="text" id="new-plan" placeholder="Añadir un nuevo plan...">
+            <input type="text" id="new-plan" placeholder="Añadir un nuevo plan..." name="plan">
             <button id="add-btn">+</button>
         </div>
         <button id="clear-btn">Desmarcar todo</button>
