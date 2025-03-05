@@ -1,6 +1,6 @@
 // Importar Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // Configuración de Firebase (REEMPLAZA ESTO CON TU CONFIGURACIÓN)
 const firebaseConfig = {
@@ -12,8 +12,9 @@ const firebaseConfig = {
     appId: "1:841578650890:web:6d0dd9f655eb230994eef3"
   };
 
-// Inicializar Firebase y Firestore
+// 🔹 Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy };
+export { db, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot };
+
